@@ -1,0 +1,142 @@
+<div class="usuarios-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Gestión de usuarios</h1>
+    <button class="btn-primary" (click)="abrirCrear()">+ Nuevo usuario</button>
+  </div>
+
+  @if (cargando()) {
+    <div class="loading">Cargando usuarios...</div>
+  } @else {
+    <div class="table-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Creado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (usuario of usuarios(); track usuario.id) {
+            <tr>
+              <td>{{ usuario.nombre }}</td>
+              <td>{{ usuario.email }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-admin]="usuario.rol === 'ADMIN'"
+                  [class.badge-vendedor]="usuario.rol === 'VENDEDOR'"
+                >
+                  {{ usuario.rol }}
+                </span>
+              </td>
+              <td>
+                <button
+                  class="toggle-btn"
+                  [class.activo]="usuario.activo"
+                  (click)="toggle(usuario)"
+                >
+                  {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                </button>
+              </td>
+              <td class="fecha">{{ usuario.creadoEn | date: 'dd/MM/yyyy' }}</td>
+              <td class="acciones">
+                <button class="btn-editar" (click)="abrirEditar(usuario)">Editar</button>
+                @if (usuario.id !== usuarioActual?.id) {
+                  <button class="btn-eliminar" (click)="abrirEliminar(usuario)">Eliminar</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- MODAL CREAR / EDITAR -->
+@if (modalAbierto()) {
+  <div class="overlay" (click)="cerrarModal()"></div>
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ modoEditar() ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <div class="field">
+        <label>Nombre</label>
+        <input
+          type="text"
+          formControlName="nombre"
+          placeholder="Nombre completo"
+          [class.input-error]="nombre.invalid && nombre.touched"
+        />
+        @if (nombre.invalid && nombre.touched) {
+          <span class="error-msg">El nombre es requerido</span>
+        }
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="correo@ejemplo.com"
+          [class.input-error]="email.invalid && email.touched"
+        />
+        @if (email.invalid && email.touched) {
+          <span class="error-msg">Ingresa un email válido</span>
+        }
+      </div>
+
+      <div class="field">
+        <label>{{ modoEditar() ? 'Nueva contraseña (opcional)' : 'Contraseña' }}</label>
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="••••••••"
+          [class.input-error]="password.invalid && password.touched"
+        />
+        @if (password.invalid && password.touched) {
+          <span class="error-msg">Mínimo 6 caracteres</span>
+        }
+      </div>
+
+      @if (errorModal) {
+        <div class="alert-error">{{ errorModal }}</div>
+      }
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : modoEditar() ? 'Guardar cambios' : 'Crear usuario' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}
+
+<!-- MODAL ELIMINAR -->
+@if (confirmarEliminar()) {
+  <div class="overlay" (click)="cerrarEliminar()"></div>
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2>Eliminar usuario</h2>
+      <button class="modal-close" (click)="cerrarEliminar()">✕</button>
+    </div>
+    <p class="confirm-text">
+      ¿Estás seguro que deseas eliminar a <strong>{{ usuarioAEliminar()?.nombre }}</strong
+      >? Esta acción no se puede deshacer.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="cerrarEliminar()">Cancelar</button>
+      <button class="btn-danger" [disabled]="eliminando()" (click)="eliminar()">
+        {{ eliminando() ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+}

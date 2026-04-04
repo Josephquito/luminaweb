@@ -1,0 +1,145 @@
+<header
+  class="nav-wrap"
+  [class.nav-wrap--visible]="navVisible"
+  [class.nav-wrap--hidden]="!navVisible"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <a routerLink="/">
+      <img src="/logo.png" alt="Lumina" class="h-10 w-auto object-contain" />
+    </a>
+
+    <div class="hidden md:flex items-center gap-8">
+      <a
+        routerLink="/"
+        [class.text-white]="isActive('/', true)"
+        [class.font-semibold]="isActive('/', true)"
+        [class.text-gray-300]="!isActive('/', true)"
+        class="hover:text-white text-sm"
+      >
+        Inicio
+      </a>
+      <a
+        routerLink="/catalogo"
+        [class.text-white]="isActive('/catalogo')"
+        [class.font-semibold]="isActive('/catalogo')"
+        [class.text-gray-300]="!isActive('/catalogo')"
+        class="hover:text-white text-sm"
+      >
+        Catálogo
+      </a>
+
+      @if (auth.isAdmin()) {
+        <a
+          routerLink="/productos"
+          [class.text-white]="isActive('/productos')"
+          [class.font-semibold]="isActive('/productos')"
+          [class.text-gray-300]="!isActive('/productos')"
+          class="hover:text-white text-sm"
+        >
+          Productos
+        </a>
+        <a
+          routerLink="/usuarios"
+          [class.text-white]="isActive('/usuarios')"
+          [class.font-semibold]="isActive('/usuarios')"
+          [class.text-gray-300]="!isActive('/usuarios')"
+          class="hover:text-white text-sm"
+        >
+          Usuarios
+        </a>
+        <button
+          (click)="auth.logout()"
+          class="text-gray-300 hover:text-white text-sm cursor-pointer bg-transparent border-none"
+        >
+          Salir
+        </button>
+      }
+    </div>
+
+    <button
+      class="hamburger md:hidden w-8 h-8 flex flex-col justify-center items-center gap-1.5"
+      (click)="toggleMobileMenu()"
+    >
+      <span
+        class="block w-6 h-0.5 bg-white transition-all duration-300"
+        [class.rotate-45]="mobileOpen"
+        [class.translate-y-2]="mobileOpen"
+      ></span>
+      <span
+        class="block w-6 h-0.5 bg-white transition-all duration-300"
+        [class.opacity-0]="mobileOpen"
+      ></span>
+      <span
+        class="block w-6 h-0.5 bg-white transition-all duration-300"
+        [class.-rotate-45]="mobileOpen"
+        [class.-translate-y-2]="mobileOpen"
+      ></span>
+    </button>
+  </div>
+</header>
+
+<div
+  class="fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300"
+  [class.opacity-100]="mobileOpen"
+  [class.opacity-0]="!mobileOpen"
+  [class.pointer-events-auto]="mobileOpen"
+  [class.pointer-events-none]="!mobileOpen"
+  (click)="closeMobileMenu()"
+></div>
+
+<div
+  #mobileMenu
+  class="fixed top-0 right-0 h-full w-64 bg-black z-50 flex flex-col pt-20 px-6 gap-6 transition-transform duration-300 md:hidden"
+  [class.translate-x-0]="mobileOpen"
+  [class.translate-x-full]="!mobileOpen"
+>
+  <a
+    routerLink="/"
+    [class.text-white]="isActive('/', true)"
+    [class.font-semibold]="isActive('/', true)"
+    [class.text-gray-300]="!isActive('/', true)"
+    class="hover:text-white text-sm"
+    (click)="closeMobileMenu()"
+  >
+    Inicio
+  </a>
+  <a
+    routerLink="/catalogo"
+    [class.text-white]="isActive('/catalogo')"
+    [class.font-semibold]="isActive('/catalogo')"
+    [class.text-gray-300]="!isActive('/catalogo')"
+    class="hover:text-white text-sm"
+    (click)="closeMobileMenu()"
+  >
+    Catálogo
+  </a>
+
+  @if (auth.isAdmin()) {
+    <a
+      routerLink="/productos"
+      [class.text-white]="isActive('/productos')"
+      [class.font-semibold]="isActive('/productos')"
+      [class.text-gray-300]="!isActive('/productos')"
+      class="hover:text-white text-sm"
+      (click)="closeMobileMenu()"
+    >
+      Productos
+    </a>
+    <a
+      routerLink="/usuarios"
+      [class.text-white]="isActive('/usuarios')"
+      [class.font-semibold]="isActive('/usuarios')"
+      [class.text-gray-300]="!isActive('/usuarios')"
+      class="hover:text-white text-sm"
+      (click)="closeMobileMenu()"
+    >
+      Usuarios
+    </a>
+    <button
+      (click)="auth.logout(); closeMobileMenu()"
+      class="text-gray-300 hover:text-white text-sm text-left bg-transparent border-none cursor-pointer"
+    >
+      Salir
+    </button>
+  }
+</div>

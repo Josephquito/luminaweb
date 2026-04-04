@@ -1,0 +1,109 @@
+<div class="overlay" (click)="onCerrar()"></div>
+
+<div class="modal">
+  <div class="modal-header">
+    <h2>Gestionar imágenes</h2>
+    <button class="modal-close" (click)="onCerrar()">✕</button>
+  </div>
+
+  <!-- IMÁGENES EXISTENTES -->
+  @if (imagenesExistentes.length) {
+    <div class="seccion">
+      <h3 class="seccion-titulo">Imágenes actuales</h3>
+      <div class="grid-imagenes">
+        @for (img of imagenesExistentes; track img.id) {
+          <div class="img-item">
+            <img
+              [src]="img.url"
+              [alt]="'Imagen ' + img.id"
+              (error)="$any($event.target).src = '/placeholder.png'"
+            />
+            <button
+              class="btn-eliminar-img"
+              [disabled]="eliminando() === img.id"
+              (click)="eliminarExistente(img)"
+            >
+              @if (eliminando() === img.id) {
+                ...
+              } @else {
+                ✕
+              }
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- NUEVAS IMÁGENES -->
+  <div class="seccion">
+    <h3 class="seccion-titulo">Agregar imágenes</h3>
+
+    <label class="drop-zone">
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        (change)="onFileSelected($event)"
+        class="hidden-input"
+      />
+      <div class="drop-content">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 16v-8m0 0-3 3m3-3 3 3M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1"
+          />
+        </svg>
+        <p>Haz clic o arrastra imágenes aquí</p>
+        <span>PNG, JPG, WEBP</span>
+      </div>
+    </label>
+
+    @if (previews().length) {
+      <div class="grid-imagenes mt">
+        @for (preview of previews(); track preview.url; let i = $index) {
+          <div class="img-item">
+            <img [src]="preview.url" [alt]="preview.nombre" />
+            <button class="btn-eliminar-img" (click)="quitarPreview(i)">✕</button>
+            <span class="img-nombre">{{ preview.nombre }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (error) {
+    <div class="alert-error">{{ error }}</div>
+  }
+
+  @if (subiendo()) {
+    <div class="progreso-wrap">
+      <div class="progreso-bar" [style.width.%]="progreso()"></div>
+    </div>
+    <p class="progreso-text">Subiendo... {{ progreso() }}%</p>
+  }
+
+  <div class="modal-footer">
+    <button class="btn-cancel" (click)="onCerrar()" [disabled]="subiendo()">Cancelar</button>
+    <button
+      class="btn-primary"
+      [disabled]="!previews().length || subiendo()"
+      (click)="subirTodas()"
+    >
+      @if (subiendo()) {
+        Subiendo...
+      } @else {
+        Subir {{ previews().length }} {{ previews().length === 1 ? 'imagen' : 'imágenes' }}
+      }
+    </button>
+  </div>
+</div>

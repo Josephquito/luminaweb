@@ -1,0 +1,213 @@
+.home-wrap {
+  min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  height: calc(100vh - 64px);
+  background-image: url('/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: #fff;
+  padding: 0 1.5rem;
+  max-width: 700px;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.hero-btn {
+  display: inline-block;
+  padding: 0.875rem 2.5rem;
+  background: #fff;
+  color: #111;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.hero-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+/* MARCAS */
+.marcas-section {
+  padding: 1.5rem 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  overflow: hidden;
+}
+
+.marcas-scroll {
+  overflow-x: auto;
+  width: 100%;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.marcas-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.marcas-scroll:active {
+  cursor: grabbing;
+}
+
+.marcas-track {
+  display: flex;
+  width: max-content;
+}
+
+.marca-item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  padding: 0 1.5rem;
+  border: none;
+  border-right: 1px solid #eee;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.marca-item:hover {
+  background: #f9f9f9;
+}
+
+.marca-logo {
+  max-height: 36px;
+  max-width: 100px;
+  object-fit: contain;
+  transition: transform 0.2s;
+}
+
+.marca-item:hover .marca-logo {
+  transform: scale(1.05);
+}
+
+.marca-nombre-fallback {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* TIENDA */
+.tienda-section {
+  padding: 2rem 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.tienda-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .tienda-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 3rem;
+  }
+  .tienda-info {
+    width: 300px;
+    flex-shrink: 0;
+  }
+  .tienda-mapa {
+    flex: 1;
+    height: 380px;
+  }
+}
+
+.tienda-titulo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1rem;
+}
+
+.tienda-dir {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.tienda-dir svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.btn-como-llegar {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #111;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-como-llegar:hover {
+  background: #333;
+}
+
+.tienda-mapa {
+  border-radius: 12px;
+  overflow: hidden;
+  height: 280px;
+  border: 1.5px solid #eee;
+}
+
+.tienda-mapa iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

@@ -1,0 +1,100 @@
+<div class="producto-wrap">
+  @if (cargando()) {
+    <div class="skeleton-wrap">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-info">
+        <div class="skeleton-line w-half"></div>
+        <div class="skeleton-line w-full"></div>
+        <div class="skeleton-line w-full"></div>
+        <div class="skeleton-line w-quarter"></div>
+      </div>
+    </div>
+  } @else if (!producto()) {
+    <div class="not-found">
+      <p>Producto no encontrado</p>
+      <button (click)="volver()" class="breadcrumb">← Volver al catálogo</button>
+    </div>
+  } @else {
+    <button (click)="volver()" class="breadcrumb">← Volver al catálogo</button>
+
+    <div class="producto-layout">
+      <!-- GALERÍA -->
+      <div class="galeria">
+        <div class="img-principal-wrap">
+          @if (imagenes.length > 1) {
+            <button class="nav-btn nav-prev" (click)="anterior()">‹</button>
+          }
+          <img
+            [src]="imagenPrincipalUrl"
+            [alt]="getNombre()"
+            class="img-principal"
+            (error)="onImageError($event)"
+          />
+          @if (imagenes.length > 1) {
+            <button class="nav-btn nav-next" (click)="siguiente()">›</button>
+          }
+        </div>
+
+        @if (imagenes.length > 1) {
+          <div class="miniaturas">
+            @for (img of imagenes; track img.id; let i = $index) {
+              <button
+                class="miniatura"
+                [class.miniatura-activa]="i === imagenActual()"
+                (click)="seleccionarImagen(i)"
+              >
+                <img [src]="img.url" [alt]="getNombre()" (error)="onImageError($event)" />
+              </button>
+            }
+          </div>
+        }
+
+        @if (auth.isAdmin()) {
+          <button class="btn-gestionar-img" (click)="abrirModalImagen()">Gestionar imágenes</button>
+        }
+      </div>
+
+      <!-- INFO -->
+      <div class="producto-info">
+        @if (producto()!.marca) {
+          <span class="info-marca">{{ producto()!.marca!.nombre }}</span>
+        }
+
+        <h1 class="info-nombre">{{ getNombre() }}</h1>
+
+        @if (producto()!.categoria) {
+          <span class="info-categoria">{{ producto()!.categoria!.nombre }}</span>
+        }
+
+        <p class="info-precio">${{ producto()!.precio | number: '1.2-2' }}</p>
+
+        @if (producto()!.descripcionCorta) {
+          <p class="info-desc-corta">
+            <strong>Descripción:</strong> {{ producto()!.descripcionCorta }}
+          </p>
+        }
+
+        @if (producto()!.descripcionLarga) {
+          <p class="info-desc-larga">
+            <strong>Más detalles del producto:</strong> {{ producto()!.descripcionLarga }}
+          </p>
+        }
+
+        <div class="info-sku">
+          @if (producto()!.sku) {
+            <span>SKU: {{ producto()!.sku }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+@if (modalImagenAbierto()) {
+  <app-subir-imagen-modal
+    [productoId]="producto()!.id"
+    [imagenesExistentes]="imagenes"
+    (cerrar)="cerrarModalImagen()"
+    (actualizado)="onImagenesActualizadas()"
+  />
+}

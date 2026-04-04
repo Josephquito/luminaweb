@@ -1,0 +1,144 @@
+<div class="admin-wrap">
+  <div class="page-header">
+    <h1 class="page-title">
+      Productos <span class="total-badge">{{ totalProductos }}</span>
+    </h1>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-row">
+    <input
+      type="text"
+      [ngModel]="buscar"
+      (ngModelChange)="onBuscarChange($event)"
+      placeholder="Buscar por nombre o SKU..."
+      class="search-input"
+    />
+    <select [(ngModel)]="marcaSeleccionada" (change)="aplicarFiltros()" class="filtro-select">
+      <option value="">Todas las marcas</option>
+      @for (m of marcas(); track m.id) {
+        <option [value]="m.nombre">{{ m.nombre }}</option>
+      }
+    </select>
+    <select [(ngModel)]="categoriaSeleccionada" (change)="aplicarFiltros()" class="filtro-select">
+      <option value="">Todas las categorías</option>
+      @for (c of categorias(); track c.id) {
+        <option [value]="c.nombre">{{ c.nombre }}</option>
+      }
+    </select>
+    <select [(ngModel)]="filtroExtra" (change)="aplicarFiltros()" class="filtro-select">
+      <option value="">Sin filtro extra</option>
+      <option value="sin_imagen">Sin imagen</option>
+      <option value="sin_descripcion">Sin descripción</option>
+      <option value="sin_categoria">Sin categoría</option>
+      <option value="sin_sku">Sin SKU</option>
+      <option value="sin_nombre_web">Sin nombre web</option>
+    </select>
+    <button
+      class="btn-limpiar"
+      [class.btn-limpiar--activo]="hayFiltrosActivos"
+      [disabled]="!hayFiltrosActivos"
+      (click)="limpiarFiltros()"
+    >
+      Limpiar
+    </button>
+    <button class="btn-exportar" (click)="exportarCSV()">↓ CSV</button>
+  </div>
+
+  <!-- TABLA -->
+  @if (cargando()) {
+    <div class="loading">Cargando productos...</div>
+  } @else {
+    <div class="table-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Img</th>
+            <th>Nombre</th>
+            <th>SKU</th>
+            <th>Marca</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Desc. Corta</th>
+            <th>Desc. Larga</th>
+            <th>Actualizado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of productos(); track p.id) {
+            <tr>
+              <td>
+                <img
+                  [src]="getImagen(p)"
+                  [alt]="p.nombre"
+                  class="tabla-img"
+                  (error)="onImageError($event)"
+                />
+              </td>
+              <td class="td-nombre">{{ p.nombreWeb || p.nombre }}</td>
+              <td class="td-mono">{{ p.sku || '—' }}</td>
+              <td>{{ p.marca?.nombre || '—' }}</td>
+              <td>{{ p.categoria?.nombre || '—' }}</td>
+              <td class="td-precio">${{ p.precio | number: '1.2-2' }}</td>
+              <td [class.stock-bajo]="p.stock === 0" [class.stock-ok]="p.stock > 0">
+                {{ p.stock }}
+              </td>
+              <td>
+                <span
+                  class="badge-bool"
+                  [class.si]="tieneDescCorta(p)"
+                  [class.no]="!tieneDescCorta(p)"
+                >
+                  {{ tieneDescCorta(p) ? 'Sí' : 'No' }}
+                </span>
+              </td>
+              <td>
+                <span
+                  class="badge-bool"
+                  [class.si]="tieneDescLarga(p)"
+                  [class.no]="!tieneDescLarga(p)"
+                >
+                  {{ tieneDescLarga(p) ? 'Sí' : 'No' }}
+                </span>
+              </td>
+              <td class="td-fecha">{{ p.actualizadoEn | date: 'dd/MM/yy HH:mm' }}</td>
+              <td>
+                <button class="btn-ver" (click)="irProducto(p.id)">Ver</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas > 1) {
+      <div class="paginacion">
+        <button
+          class="pag-btn"
+          [disabled]="paginaActual === 1"
+          (click)="actualizarUrl(paginaActual - 1)"
+        >
+          ←
+        </button>
+        @for (p of paginas; track p) {
+          <button
+            class="pag-btn"
+            [class.pag-active]="p === paginaActual"
+            (click)="actualizarUrl(p)"
+          >
+            {{ p }}
+          </button>
+        }
+        <button
+          class="pag-btn"
+          [disabled]="paginaActual === totalPaginas"
+          (click)="actualizarUrl(paginaActual + 1)"
+        >
+          →
+        </button>
+      </div>
+    }
+  }
+</div>

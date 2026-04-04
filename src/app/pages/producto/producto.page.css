@@ -1,0 +1,281 @@
+.producto-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.breadcrumb {
+  display: inline-block;
+  font-size: 0.875rem;
+  color: #666;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+}
+
+.breadcrumb:hover {
+  color: #111;
+}
+
+.btn-gestionar-img {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.625rem;
+  border: 1.5px dashed #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #666;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-gestionar-img:hover {
+  border-color: #111;
+  color: #111;
+}
+
+button.breadcrumb {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* LAYOUT */
+.producto-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .producto-layout {
+    flex-direction: row;
+    gap: 3rem;
+    align-items: flex-start;
+  }
+
+  .galeria {
+    width: 50%;
+    flex-shrink: 0;
+  }
+  .producto-info {
+    flex: 1;
+  }
+}
+
+/* GALERÍA */
+.img-principal-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.img-principal {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background 0.2s;
+}
+
+.nav-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+.nav-prev {
+  left: 0.75rem;
+}
+.nav-next {
+  right: 0.75rem;
+}
+
+/* MINIATURAS */
+.miniaturas {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+}
+
+.miniatura {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: #f5f5f5;
+  transition: border-color 0.2s;
+}
+
+.miniatura img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.miniatura-activa {
+  border-color: #111;
+}
+
+/* INFO */
+.info-marca {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+}
+
+.info-nombre {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.2;
+  margin: 0.5rem 0;
+}
+
+.info-categoria {
+  display: inline-block;
+  font-size: 0.75rem;
+  background: #f0f0f0;
+  color: #555;
+  padding: 0.25rem 0.625rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+.info-precio {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111;
+  margin: 1rem 0;
+}
+
+.info-desc-corta {
+  font-size: 0.9375rem;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.info-desc-larga {
+  font-size: 0.875rem;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.info-sku {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+/* SKELETON */
+.skeleton-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .skeleton-wrap {
+    flex-direction: row;
+  }
+}
+
+.skeleton-img {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .skeleton-img {
+    width: 50%;
+  }
+}
+
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-line {
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.w-full {
+  width: 100%;
+}
+.w-half {
+  width: 50%;
+}
+.w-quarter {
+  width: 25%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* NOT FOUND */
+.not-found {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #888;
+}
+
+.btn-volver {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.625rem 1.25rem;
+  background: #111;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.875rem;
+}

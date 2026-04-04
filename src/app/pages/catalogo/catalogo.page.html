@@ -1,0 +1,208 @@
+<div class="catalogo-wrap">
+  <!-- HEADER BÚSQUEDA -->
+  <div class="catalogo-header">
+    <div class="search-row">
+      <input
+        type="text"
+        [ngModel]="buscar"
+        (ngModelChange)="onBuscarChange($event)"
+        placeholder="Buscar productos..."
+        class="search-input"
+      />
+      <button class="btn-search" (click)="aplicarFiltros()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+          />
+        </svg>
+      </button>
+      <button class="btn-filtros md-hidden" (click)="drawerAbierto.set(true)">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18M7 12h10M11 20h2" />
+        </svg>
+        Filtros
+        @if (marcaSeleccionada || categoriaSeleccionada) {
+          <span class="filtro-badge">!</span>
+        }
+      </button>
+    </div>
+    <p class="total-text">{{ totalProductos }} productos encontrados</p>
+  </div>
+
+  <div class="catalogo-body">
+    <!-- SIDEBAR DESKTOP -->
+    <aside class="sidebar desktop-only">
+      <h3 class="sidebar-title">Filtros</h3>
+
+      <div class="filtro-group">
+        <label class="filtro-label">Marca</label>
+        <select [(ngModel)]="marcaSeleccionada" (change)="aplicarFiltros()" class="filtro-select">
+          <option value="">Todas las marcas</option>
+          @for (marca of marcas(); track marca.id) {
+            <option [value]="marca.nombre">{{ marca.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filtro-group">
+        <label class="filtro-label">Categoría</label>
+        <select
+          [(ngModel)]="categoriaSeleccionada"
+          (change)="aplicarFiltros()"
+          class="filtro-select"
+        >
+          <option value="">Todas las categorías</option>
+          @for (cat of categorias(); track cat.id) {
+            <option [value]="cat.nombre">{{ cat.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <button
+        class="btn-limpiar"
+        [class.btn-limpiar--activo]="hayFiltrosActivos"
+        [disabled]="!hayFiltrosActivos"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar filtros
+      </button>
+    </aside>
+
+    <!-- GRID PRODUCTOS -->
+    <main class="productos-grid-wrap">
+      @if (cargando()) {
+        <div class="loading-grid">
+          @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+            <div class="skeleton-card"></div>
+          }
+        </div>
+      } @else if (productos().length === 0) {
+        <div class="empty-state">
+          <p>No se encontraron productos</p>
+          <button
+            class="btn-limpiar"
+            [class.btn-limpiar--activo]="hayFiltrosActivos"
+            [disabled]="!hayFiltrosActivos"
+            (click)="limpiarFiltros()"
+          >
+            Limpiar
+          </button>
+        </div>
+      } @else {
+        <div class="productos-grid">
+          @for (producto of productos(); track producto.id) {
+            <a [routerLink]="['/producto', producto.id]" class="producto-card">
+              <div class="card-img-wrap">
+                <img
+                  [src]="getImagenPrincipal(producto)"
+                  [alt]="getNombreProducto(producto)"
+                  class="card-img"
+                  loading="lazy"
+                  (error)="
+                    $any($event.target).onerror = null;
+                    $any($event.target).src = '/assets/placeholder.png'
+                  "
+                />
+              </div>
+              <div class="card-body">
+                @if (producto.marca) {
+                  <span class="card-marca">{{ producto.marca.nombre }}</span>
+                }
+                <h3 class="card-nombre">{{ getNombreProducto(producto) }}</h3>
+                @if (producto.descripcionCorta) {
+                  <p class="card-desc">{{ producto.descripcionCorta }}</p>
+                }
+                <p class="card-precio">${{ producto.precio | number: '1.2-2' }}</p>
+              </div>
+            </a>
+          }
+        </div>
+
+        <!-- PAGINACIÓN -->
+        @if (totalPaginas > 1) {
+          <div class="paginacion">
+            <button
+              class="pag-btn"
+              [disabled]="paginaActual === 1"
+              (click)="cargarProductos(paginaActual - 1)"
+            >
+              ←
+            </button>
+
+            @for (p of paginas; track p) {
+              <button
+                class="pag-btn"
+                [class.pag-active]="p === paginaActual"
+                (click)="cargarProductos(p)"
+              >
+                {{ p }}
+              </button>
+            }
+
+            <button
+              class="pag-btn"
+              [disabled]="paginaActual === totalPaginas"
+              (click)="cargarProductos(paginaActual + 1)"
+            >
+              →
+            </button>
+          </div>
+        }
+      }
+    </main>
+  </div>
+</div>
+
+<!-- DRAWER MOBILE -->
+@if (drawerAbierto()) {
+  <div class="drawer-overlay" (click)="drawerAbierto.set(false)"></div>
+  <div class="drawer">
+    <div class="drawer-header">
+      <h3>Filtros</h3>
+      <button (click)="drawerAbierto.set(false)" class="drawer-close">✕</button>
+    </div>
+
+    <div class="filtro-group">
+      <label class="filtro-label">Marca</label>
+      <select [(ngModel)]="marcaSeleccionada" class="filtro-select">
+        <option value="">Todas las marcas</option>
+        @for (marca of marcas(); track marca.id) {
+          <option [value]="marca.nombre">{{ marca.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filtro-group">
+      <label class="filtro-label">Categoría</label>
+      <select [(ngModel)]="categoriaSeleccionada" class="filtro-select">
+        <option value="">Todas las categorías</option>
+        @for (cat of categorias(); track cat.id) {
+          <option [value]="cat.nombre">{{ cat.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="drawer-actions">
+      <button class="btn-aplicar" (click)="aplicarFiltros()">Aplicar filtros</button>
+      <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+  </div>
+}
