@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CatalogService, Producto } from '../../services/catalog.service';
@@ -17,6 +17,8 @@ export class ProductoPage implements OnInit {
   private catalog = inject(CatalogService);
   private location = inject(Location);
   auth = inject(AuthService);
+
+  @ViewChild('sliderRef') sliderRef!: ElementRef<HTMLDivElement>;
 
   producto = signal<Producto | null>(null);
   cargando = signal(true);
@@ -38,24 +40,28 @@ export class ProductoPage implements OnInit {
     return this.producto()?.imagenes ?? [];
   }
 
-  get imagenPrincipalUrl(): string {
-    const imgs = this.imagenes;
-    if (!imgs.length) return '/placeholder.png';
-    return imgs[this.imagenActual()].url;
-  }
-
   seleccionarImagen(index: number) {
     this.imagenActual.set(index);
+    const slider = this.sliderRef?.nativeElement;
+    if (!slider) return;
+    slider.scrollTo({ left: slider.offsetWidth * index, behavior: 'smooth' });
   }
 
   anterior() {
     const total = this.imagenes.length;
-    this.imagenActual.set((this.imagenActual() - 1 + total) % total);
+    this.seleccionarImagen((this.imagenActual() - 1 + total) % total);
   }
 
   siguiente() {
     const total = this.imagenes.length;
-    this.imagenActual.set((this.imagenActual() + 1) % total);
+    this.seleccionarImagen((this.imagenActual() + 1) % total);
+  }
+
+  onSliderScroll() {
+    const slider = this.sliderRef?.nativeElement;
+    if (!slider) return;
+    const index = Math.round(slider.scrollLeft / slider.offsetWidth);
+    this.imagenActual.set(index);
   }
 
   getNombre(): string {
@@ -77,6 +83,7 @@ export class ProductoPage implements OnInit {
   abrirModalImagen() {
     this.modalImagenAbierto.set(true);
   }
+
   cerrarModalImagen() {
     this.modalImagenAbierto.set(false);
   }

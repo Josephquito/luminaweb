@@ -10,24 +10,36 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CatalogService } from '../../services/catalog.service';
+import { SiteMediaModal } from '../../modales/site-media/site-media-modal';
+import { SiteMediaService, SiteMedia } from '../../services/site-media.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SiteMediaModal],
   templateUrl: './home.page.html',
   styleUrl: './home.page.css',
 })
 export class HomePage implements OnInit, AfterViewInit {
   private catalog = inject(CatalogService);
   private router = inject(Router);
+  private siteMedia = inject(SiteMediaService);
+  auth = inject(AuthService);
 
   @ViewChild('marcasScroll') marcasScrollRef!: ElementRef<HTMLDivElement>;
 
   marcas = signal<{ id: number; nombre: string }[]>([]);
+  fotosTienda = signal<SiteMedia[]>([]);
+  modalTiendaAbierto = signal(false);
 
   ngOnInit() {
     this.catalog.getMarcas().subscribe((m) => this.marcas.set(m));
+    this.cargarFotosTienda();
+  }
+
+  cargarFotosTienda() {
+    this.siteMedia.getByKey('tienda').subscribe((f) => this.fotosTienda.set(f));
   }
 
   ngAfterViewInit() {

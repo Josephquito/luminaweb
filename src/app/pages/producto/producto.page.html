@@ -20,22 +20,31 @@
     <div class="producto-layout">
       <!-- GALERÍA -->
       <div class="galeria">
-        <div class="img-principal-wrap">
-          @if (imagenes.length > 1) {
-            <button class="nav-btn nav-prev" (click)="anterior()">‹</button>
-          }
-          <img
-            [src]="imagenPrincipalUrl"
-            [alt]="getNombre()"
-            class="img-principal"
-            (error)="onImageError($event)"
-          />
-          @if (imagenes.length > 1) {
-            <button class="nav-btn nav-next" (click)="siguiente()">›</button>
+        <div class="slider-wrap" #sliderRef (scroll)="onSliderScroll()">
+          @for (
+            img of imagenes.length ? imagenes : [{ url: '/placeholder.png', id: 0, orden: 0 }];
+            track $index
+          ) {
+            <div class="slide">
+              <img [src]="img.url" [alt]="getNombre()" (error)="onImageError($event)" />
+            </div>
           }
         </div>
 
         @if (imagenes.length > 1) {
+          <div class="dots">
+            @for (img of imagenes; track img.id; let i = $index) {
+              <button
+                class="dot"
+                [class.dot-activo]="i === imagenActual()"
+                (click)="seleccionarImagen(i)"
+              ></button>
+            }
+          </div>
+
+          <button class="nav-btn nav-prev" (click)="anterior()">‹</button>
+          <button class="nav-btn nav-next" (click)="siguiente()">›</button>
+
           <div class="miniaturas">
             @for (img of imagenes; track img.id; let i = $index) {
               <button
@@ -75,7 +84,7 @@
         }
 
         @if (producto()!.descripcionLarga) {
-          <p class="info-desc-larga">
+          <p class="info-desc-larga" style="white-space: pre-line">
             <strong>Más detalles del producto:</strong> {{ producto()!.descripcionLarga }}
           </p>
         }

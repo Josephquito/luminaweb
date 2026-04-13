@@ -33,6 +33,8 @@ export class ProductosPage implements OnInit {
   totalProductos = 0;
   limit = 50;
 
+  isSyncing = signal(false);
+
   private buscarSubject = new Subject<string>();
   private iniciado = false;
 
@@ -200,5 +202,16 @@ export class ProductosPage implements OnInit {
         a.click();
         URL.revokeObjectURL(url);
       });
+  }
+
+  syncProductos() {
+    this.isSyncing.set(true);
+    this.catalog.syncProductos().subscribe({
+      next: (result) => {
+        this.isSyncing.set(false);
+        this.cargarProductos(this.paginaActual, false);
+      },
+      error: () => this.isSyncing.set(false),
+    });
   }
 }

@@ -26,12 +26,22 @@
     </div>
   </div>
 
-  <!-- TIENDA -->
-  <section class="tienda-section">
+  <section class="fotos-section">
+    <h2 class="fotos-titulo">Visita nuestra tienda</h2>
+
+    @if (fotosTienda().length) {
+      <div class="fotos-grid">
+        @for (foto of fotosTienda(); track foto.id) {
+          <div class="foto-item">
+            <img [src]="foto.url" alt="Foto tienda" />
+          </div>
+        }
+      </div>
+    }
+
     <div class="tienda-content">
       <div class="tienda-info">
-        <h2 class="tienda-titulo">Visita nuestra tienda</h2>
-        <p class="tienda-dir">
+        <div class="tienda-dir">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
@@ -48,7 +58,7 @@
             />
           </svg>
           Mariscal Sucre y Manuel Vega, Cuenca, Ecuador
-        </p>
+        </div>
 
         <a
           href="https://maps.app.goo.gl/e4UCmDp3DsZVr6426"
@@ -58,6 +68,12 @@
         >
           Cómo llegar →
         </a>
+
+        @if (auth.isAdmin()) {
+          <button class="btn-gestionar-img" (click)="modalTiendaAbierto.set(true)">
+            Gestionar fotos tienda
+          </button>
+        }
       </div>
 
       <div class="tienda-mapa">
@@ -76,3 +92,12 @@
     </div>
   </section>
 </div>
+
+@if (modalTiendaAbierto()) {
+  <app-site-media-modal
+    mediaKey="tienda"
+    [imagenesExistentes]="fotosTienda()"
+    (cerrar)="modalTiendaAbierto.set(false)"
+    (actualizado)="cargarFotosTienda()"
+  />
+}

@@ -43,6 +43,9 @@
       Limpiar
     </button>
     <button class="btn-exportar" (click)="exportarCSV()">↓ CSV</button>
+    <button class="btn-exportar" (click)="syncProductos()" [disabled]="isSyncing()">
+      {{ isSyncing() ? 'Sincronizando...' : '↻ Sincronizar' }}
+    </button>
   </div>
 
   <!-- TABLA -->

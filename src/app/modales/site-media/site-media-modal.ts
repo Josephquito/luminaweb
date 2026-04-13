@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ImagesService } from '../../services/images.service';
+import { SiteMediaService, SiteMedia } from '../../services/site-media.service';
 
 interface Preview {
   file: File;
@@ -8,50 +8,38 @@ interface Preview {
   nombre: string;
 }
 
-interface ImagenExistente {
-  id: number;
-  url: string;
-  orden: number;
-  productoId?: number;
-}
-
 @Component({
-  selector: 'app-subir-imagen-modal',
+  selector: 'app-site-media-modal',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './subir-imagen.modal.html',
-  styleUrl: './subir-imagen.modal.css',
+  templateUrl: './site-media.modal.html',
+  styleUrl: './site-media.modal.css',
 })
-export class SubirImagenModal {
-  @Input() productoId!: number;
-  @Input() imagenesExistentes: ImagenExistente[] = [];
+export class SiteMediaModal {
+  @Input() mediaKey!: string;
+  @Input() imagenesExistentes: SiteMedia[] = [];
   @Output() cerrar = new EventEmitter<void>();
   @Output() actualizado = new EventEmitter<void>();
 
-  private imagesService = inject(ImagesService);
+  private service = inject(SiteMediaService);
 
   previews = signal<Preview[]>([]);
   subiendo = signal(false);
   eliminando = signal<number | null>(null);
   progreso = signal(0);
   error = '';
-
+  dropActivo = signal(false);
   dragIndex = signal<number | null>(null);
   dragOverIndex = signal<number | null>(null);
   guardandoOrden = false;
 
-  dropActivo = signal(false);
-
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
-
     const nuevas: Preview[] = [];
     Array.from(input.files).forEach((file) => {
-      const url = URL.createObjectURL(file);
-      nuevas.push({ file, url, nombre: file.name });
+      nuevas.push({ file, url: URL.createObjectURL(file), nombre: file.name });
     });
-
     this.previews.set([...this.previews(), ...nuevas]);
     input.value = '';
   }
@@ -65,19 +53,17 @@ export class SubirImagenModal {
 
   async subirTodas() {
     if (!this.previews().length) return;
-
     this.subiendo.set(true);
     this.error = '';
     this.progreso.set(0);
-
     const lista = this.previews();
     const ordenInicial = this.imagenesExistentes.length;
 
     for (let i = 0; i < lista.length; i++) {
       try {
         await new Promise<void>((resolve, reject) => {
-          this.imagesService
-            .subirImagen(this.productoId, lista[i].file, ordenInicial + i)
+          this.service
+            .subir(this.mediaKey, lista[i].file, ordenInicial + i)
             .subscribe({ next: () => resolve(), error: reject });
         });
         this.progreso.set(Math.round(((i + 1) / lista.length) * 100));
@@ -94,9 +80,9 @@ export class SubirImagenModal {
     this.actualizado.emit();
   }
 
-  eliminarExistente(imagen: ImagenExistente) {
-    this.eliminando.set(imagen.id);
-    this.imagesService.eliminarImagen(imagen.id).subscribe({
+  eliminarExistente(media: SiteMedia) {
+    this.eliminando.set(media.id);
+    this.service.eliminar(media.id).subscribe({
       next: () => {
         this.eliminando.set(null);
         this.actualizado.emit();
@@ -128,14 +114,11 @@ export class SubirImagenModal {
     this.dropActivo.set(false);
     const files = event.dataTransfer?.files;
     if (!files?.length) return;
-
     const nuevas: Preview[] = [];
     Array.from(files).forEach((file) => {
       if (!file.type.startsWith('image/')) return;
-      const url = URL.createObjectURL(file);
-      nuevas.push({ file, url, nombre: file.name });
+      nuevas.push({ file, url: URL.createObjectURL(file), nombre: file.name });
     });
-
     this.previews.set([...this.previews(), ...nuevas]);
   }
 
@@ -156,7 +139,6 @@ export class SubirImagenModal {
   onDragLeave() {
     this.dragOverIndex.set(null);
   }
-
   onDragEnd() {
     this.dragIndex.set(null);
     this.dragOverIndex.set(null);
@@ -170,25 +152,19 @@ export class SubirImagenModal {
       this.dragOverIndex.set(null);
       return;
     }
-
     const lista = [...this.imagenesExistentes];
     const [movido] = lista.splice(from, 1);
     lista.splice(index, 0, movido);
-
     const reordenadas = lista.map((img, i) => ({ ...img, orden: i }));
     this.imagenesExistentes = reordenadas;
-
     this.guardandoOrden = true;
-    this.imagesService
-      .reordenar(reordenadas.map((img) => ({ id: img.id, orden: img.orden })))
-      .subscribe({
-        next: () => {
-          this.guardandoOrden = false;
-          this.actualizado.emit();
-        },
-        error: () => (this.guardandoOrden = false),
-      });
-
+    this.service.reordenar(reordenadas.map((img) => ({ id: img.id, orden: img.orden }))).subscribe({
+      next: () => {
+        this.guardandoOrden = false;
+        this.actualizado.emit();
+      },
+      error: () => (this.guardandoOrden = false),
+    });
     this.dragIndex.set(null);
     this.dragOverIndex.set(null);
   }

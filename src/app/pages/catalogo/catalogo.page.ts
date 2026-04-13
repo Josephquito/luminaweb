@@ -21,6 +21,8 @@ export class CatalogoPage implements OnInit {
   productos = signal<Producto[]>([]);
   marcas = signal<{ id: number; nombre: string }[]>([]);
   categorias = signal<{ id: number; nombre: string }[]>([]);
+  marcasOriginales = signal<{ id: number; nombre: string }[]>([]);
+  categoriasOriginales = signal<{ id: number; nombre: string }[]>([]);
 
   cargando = signal(false);
   drawerAbierto = signal(false);
@@ -41,9 +43,6 @@ export class CatalogoPage implements OnInit {
     if (this.iniciado) return;
     this.iniciado = true;
 
-    this.cargarFiltros();
-
-    // Leer filtros desde la URL
     this.route.queryParams.subscribe((params) => {
       this.buscar = params['buscar'] || '';
       this.marcaSeleccionada = params['marca'] || '';
@@ -52,15 +51,9 @@ export class CatalogoPage implements OnInit {
       this.cargarProductos(this.paginaActual, false);
     });
 
-    // Debounce buscador
     this.buscarSubject
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => this.actualizarUrl(1));
-  }
-
-  cargarFiltros() {
-    this.catalog.getMarcas().subscribe((m) => this.marcas.set(m));
-    this.catalog.getCategorias().subscribe((c) => this.categorias.set(c));
   }
 
   cargarProductos(pagina = 1, scrollTop = true) {
@@ -82,12 +75,26 @@ export class CatalogoPage implements OnInit {
           this.totalProductos = res.meta.total;
           this.cargando.set(false);
           if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+
+          // Si hay búsqueda activa, usar opciones filtradas
+          // Si no hay búsqueda, guardar como originales y usar esas
+          if (this.buscar) {
+            this.marcas.set(res.marcasDisponibles);
+            this.categorias.set(res.categoriasDisponibles);
+          } else {
+            // Solo actualizar originales si no hay filtro de marca/categoria activo
+            if (!this.marcaSeleccionada && !this.categoriaSeleccionada) {
+              this.marcasOriginales.set(res.marcasDisponibles);
+              this.categoriasOriginales.set(res.categoriasDisponibles);
+            }
+            this.marcas.set(this.marcasOriginales());
+            this.categorias.set(this.categoriasOriginales());
+          }
         },
         error: () => this.cargando.set(false),
       });
   }
 
-  // Actualiza la URL con los filtros actuales
   actualizarUrl(pagina = 1) {
     const queryParams: any = {};
     if (this.buscar) queryParams['buscar'] = this.buscar;
@@ -117,7 +124,15 @@ export class CatalogoPage implements OnInit {
 
   onBuscarChange(valor: string) {
     this.buscar = valor;
+    this.marcaSeleccionada = '';
+    this.categoriaSeleccionada = '';
     this.buscarSubject.next(valor);
+  }
+
+  onBuscarEnter() {
+    this.marcaSeleccionada = '';
+    this.categoriaSeleccionada = '';
+    this.actualizarUrl(1);
   }
 
   get hayFiltrosActivos(): boolean {

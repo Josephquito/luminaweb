@@ -23,9 +23,16 @@ export interface Producto {
   imagenes: { id: number; url: string; orden: number; productoId?: number }[];
 }
 
+export interface FiltroOpcion {
+  id: number;
+  nombre: string;
+}
+
 export interface ProductosPaginados {
   data: Producto[];
   meta: { total: number; page: number; limit: number; totalPages: number };
+  marcasDisponibles: FiltroOpcion[];
+  categoriasDisponibles: FiltroOpcion[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -33,7 +40,6 @@ export class CatalogService {
   private http = inject(HttpClient);
   private api = `${environment.apiUrl}/api/catalog`;
 
-  // Catálogo público agrupado
   getProducts(
     filtros: {
       marca?: string;
@@ -94,11 +100,17 @@ export class CatalogService {
     return this.http.get<Producto>(`${this.api}/products/${id}`);
   }
 
-  getMarcas(): Observable<{ id: number; nombre: string }[]> {
-    return this.http.get<any[]>(`${this.api}/marcas`);
+  // Estos dos ya no se usan en el catálogo público pero los dejamos
+  // por si el admin u otro módulo los necesita
+  getMarcas(): Observable<FiltroOpcion[]> {
+    return this.http.get<FiltroOpcion[]>(`${this.api}/marcas`);
   }
 
-  getCategorias(): Observable<{ id: number; nombre: string }[]> {
-    return this.http.get<any[]>(`${this.api}/categorias`);
+  getCategorias(): Observable<FiltroOpcion[]> {
+    return this.http.get<FiltroOpcion[]>(`${this.api}/categorias`);
+  }
+
+  syncProductos(): Observable<any> {
+    return this.http.post(`${this.api}/sync`, {});
   }
 }
