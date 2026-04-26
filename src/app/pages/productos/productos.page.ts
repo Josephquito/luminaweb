@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CatalogService, Producto } from '../../services/catalog.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-productos',
@@ -17,6 +18,7 @@ export class ProductosPage implements OnInit {
   private catalog = inject(CatalogService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  auth = inject(AuthService);
 
   productos = signal<Producto[]>([]);
   marcas = signal<{ id: number; nombre: string }[]>([]);

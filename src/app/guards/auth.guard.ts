@@ -29,3 +29,20 @@ export const adminGuard: CanActivateFn = () => {
 
   return true;
 };
+
+export const staffGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (!auth.isLoggedIn()) {
+    router.navigate(['/login']);
+    return false;
+  }
+
+  if (!auth.isStaff()) {
+    router.navigate(['/']);
+    return false;
+  }
+
+  return true;
+};

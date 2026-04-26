@@ -28,7 +28,7 @@
         Catálogo
       </a>
 
-      @if (auth.isAdmin()) {
+      @if (auth.isStaff()) {
         <a
           routerLink="/productos"
           [class.text-white]="isActive('/productos')"
@@ -38,6 +38,9 @@
         >
           Productos
         </a>
+      }
+
+      @if (auth.isAdmin()) {
         <a
           routerLink="/usuarios"
           [class.text-white]="isActive('/usuarios')"
@@ -47,6 +50,9 @@
         >
           Usuarios
         </a>
+      }
+
+      @if (auth.isStaff()) {
         <button
           (click)="auth.logout()"
           class="text-gray-300 hover:text-white text-sm cursor-pointer bg-transparent border-none"
@@ -114,7 +120,7 @@
     Catálogo
   </a>
 
-  @if (auth.isAdmin()) {
+  @if (auth.isStaff()) {
     <a
       routerLink="/productos"
       [class.text-white]="isActive('/productos')"
@@ -125,6 +131,9 @@
     >
       Productos
     </a>
+  }
+
+  @if (auth.isAdmin()) {
     <a
       routerLink="/usuarios"
       [class.text-white]="isActive('/usuarios')"
@@ -135,6 +144,9 @@
     >
       Usuarios
     </a>
+  }
+
+  @if (auth.isStaff()) {
     <button
       (click)="auth.logout(); closeMobileMenu()"
       class="text-gray-300 hover:text-white text-sm text-left bg-transparent border-none cursor-pointer"

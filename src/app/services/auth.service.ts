@@ -53,6 +53,14 @@ export class AuthService {
     return this.currentUser()?.rol === 'ADMIN';
   }
 
+  isVendedor(): boolean {
+    return this.currentUser()?.rol === 'VENDEDOR';
+  }
+
+  isStaff(): boolean {
+    return this.isAdmin() || this.isVendedor();
+  }
+
   // ─── Gestión de usuarios (solo ADMIN) ────────────────────────────────────────
 
   getUsuarios(): Observable<Usuario[]> {

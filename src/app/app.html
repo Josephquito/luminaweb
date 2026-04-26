@@ -1,2 +1,8 @@
-<app-navbar></app-navbar>
-<router-outlet />
+<div class="flex flex-col min-h-screen">
+  <app-navbar></app-navbar>
+  <main class="flex-1">
+    <router-outlet />
+  </main>
+  <app-footer></app-footer>
+</div>
+<app-whatsapp-float></app-whatsapp-float>

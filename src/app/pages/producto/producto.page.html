@@ -77,6 +77,10 @@
 
         <p class="info-precio">${{ producto()!.precio | number: '1.2-2' }}</p>
 
+        @if (auth.isStaff()) {
+          <p class="info-desc-corta"><strong>Stock:</strong> {{ producto()!.stock }} unidades</p>
+        }
+
         @if (producto()!.descripcionCorta) {
           <p class="info-desc-corta">
             <strong>Descripción:</strong> {{ producto()!.descripcionCorta }}

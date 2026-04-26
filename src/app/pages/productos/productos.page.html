@@ -26,14 +26,18 @@
         <option [value]="c.nombre">{{ c.nombre }}</option>
       }
     </select>
-    <select [(ngModel)]="filtroExtra" (change)="aplicarFiltros()" class="filtro-select">
-      <option value="">Sin filtro extra</option>
-      <option value="sin_imagen">Sin imagen</option>
-      <option value="sin_descripcion">Sin descripción</option>
-      <option value="sin_categoria">Sin categoría</option>
-      <option value="sin_sku">Sin SKU</option>
-      <option value="sin_nombre_web">Sin nombre web</option>
-    </select>
+
+    @if (auth.isAdmin()) {
+      <select [(ngModel)]="filtroExtra" (change)="aplicarFiltros()" class="filtro-select">
+        <option value="">Sin filtro extra</option>
+        <option value="sin_imagen">Sin imagen</option>
+        <option value="sin_descripcion">Sin descripción</option>
+        <option value="sin_categoria">Sin categoría</option>
+        <option value="sin_sku">Sin SKU</option>
+        <option value="sin_nombre_web">Sin nombre web</option>
+      </select>
+    }
+
     <button
       class="btn-limpiar"
       [class.btn-limpiar--activo]="hayFiltrosActivos"
@@ -42,10 +46,13 @@
     >
       Limpiar
     </button>
-    <button class="btn-exportar" (click)="exportarCSV()">↓ CSV</button>
-    <button class="btn-exportar" (click)="syncProductos()" [disabled]="isSyncing()">
-      {{ isSyncing() ? 'Sincronizando...' : '↻ Sincronizar' }}
-    </button>
+
+    @if (auth.isAdmin()) {
+      <button class="btn-exportar" (click)="exportarCSV()">↓ CSV</button>
+      <button class="btn-exportar" (click)="syncProductos()" [disabled]="isSyncing()">
+        {{ isSyncing() ? 'Sincronizando...' : '↻ Sincronizar' }}
+      </button>
+    }
   </div>
 
   <!-- TABLA -->
