@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './guards/auth.guard';
-import { staffGuard } from './guards/auth.guard';
+import { adminGuard, staffGuard, loginGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -17,6 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [loginGuard],
     loadComponent: () => import('./pages/login/login.page').then((m) => m.LoginPage),
   },
   {
@@ -26,7 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'productos',
-    canActivate: [staffGuard], // antes era adminGuard
+    canActivate: [staffGuard],
     loadComponent: () => import('./pages/productos/productos.page').then((m) => m.ProductosPage),
   },
   {

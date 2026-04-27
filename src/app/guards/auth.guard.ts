@@ -46,3 +46,15 @@ export const staffGuard: CanActivateFn = () => {
 
   return true;
 };
+
+export const loginGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isLoggedIn()) {
+    router.navigate(['/']);
+    return false;
+  }
+
+  return true;
+};

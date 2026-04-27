@@ -34,11 +34,11 @@ export class AuthService {
       );
   }
 
-  logout() {
+  logout(expired = false) {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     this.currentUser.set(null);
-    this.router.navigate(['/']);
+    this.router.navigate([expired ? '/login' : '/']);
   }
 
   getToken(): string | null {
