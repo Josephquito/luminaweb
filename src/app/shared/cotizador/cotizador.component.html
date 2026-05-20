@@ -59,6 +59,7 @@
           } @else {
             @for (r of resultados(); track r.id) {
               <button class="resultado-item" (click)="agregarProducto(r)">
+                <img class="resultado-img" [src]="getImagen(r)" [alt]="r.nombreWeb" />
                 <div class="resultado-info">
                   <span class="resultado-nombre">{{ r.nombreWeb }}</span>
                   @if (r.marca) {
@@ -82,10 +83,20 @@
       } @else {
         @for (item of items(); track item.producto.id) {
           <div class="item-row">
+            <img
+              class="item-img"
+              [src]="getImagen(item.producto)"
+              [alt]="item.producto.nombreWeb"
+            />
             <div class="item-info">
-              @if (item.producto.marca) {
-                <span class="item-marca">{{ item.producto.marca.nombre }}</span>
-              }
+              <div class="item-meta">
+                @if (item.producto.marca) {
+                  <span class="item-marca">{{ item.producto.marca.nombre }}</span>
+                }
+                @if (item.producto.sku) {
+                  <span class="item-sku">{{ item.producto.sku }}</span>
+                }
+              </div>
               <span class="item-nombre">{{ item.producto.nombreWeb }}</span>
             </div>
             <div class="item-controles">

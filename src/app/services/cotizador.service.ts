@@ -10,6 +10,7 @@ export interface ProductoCotizador {
   precio: number;
   sku: string | null;
   stock: number;
+  imagenes?: { url: string }[];
 }
 
 export interface ItemCotizador {

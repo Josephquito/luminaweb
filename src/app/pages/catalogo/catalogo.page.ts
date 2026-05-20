@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CatalogService, Producto } from '../../services/catalog.service';
 import { AuthService } from '../../services/auth.service';
 import { CotizadorComponent } from '../../shared/cotizador/cotizador.component';
+import { ViewportScroller } from '@angular/common';
 
 @Component({
   selector: 'app-catalogo',
@@ -19,6 +20,10 @@ export class CatalogoPage implements OnInit {
   private catalog = inject(CatalogService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private scroller = inject(ViewportScroller);
+  private readonly SCROLL_KEY = 'lumina_catalogo_scroll';
+  private readonly PAGE_KEY = 'lumina_catalogo_page';
+
   auth = inject(AuthService);
 
   productos = signal<Producto[]>([]);
@@ -46,6 +51,11 @@ export class CatalogoPage implements OnInit {
 
   @ViewChild(CotizadorComponent) cotizadorRef!: CotizadorComponent;
 
+  guardarPosicion() {
+    sessionStorage.setItem(this.SCROLL_KEY, window.scrollY.toString());
+    sessionStorage.setItem(this.PAGE_KEY, this.paginaActual.toString());
+  }
+
   agregarACotizador(event: Event, producto: any) {
     event.preventDefault();
     event.stopPropagation();
@@ -56,6 +66,7 @@ export class CatalogoPage implements OnInit {
       precio: producto.precio,
       sku: producto.sku,
       stock: producto.stock,
+      imagenes: producto.imagenes ?? [], // agrega esto
     });
     this.cotizadorRef.pulse();
   }
@@ -80,8 +91,16 @@ export class CatalogoPage implements OnInit {
       this.buscar = params['buscar'] || '';
       this.marcaSeleccionada = params['marca'] || '';
       this.categoriaSeleccionada = params['categoria'] || '';
-      this.paginaActual = params['page'] ? parseInt(params['page']) : 1;
-      this.cargarProductos(this.paginaActual, false);
+
+      const savedPage = sessionStorage.getItem(this.PAGE_KEY);
+      this.paginaActual = params['page']
+        ? parseInt(params['page'])
+        : savedPage
+          ? parseInt(savedPage)
+          : 1;
+
+      const restaurar = !!sessionStorage.getItem(this.SCROLL_KEY);
+      this.cargarProductos(this.paginaActual, false, restaurar);
     });
 
     this.buscarSubject
@@ -89,7 +108,7 @@ export class CatalogoPage implements OnInit {
       .subscribe(() => this.actualizarUrl(1));
   }
 
-  cargarProductos(pagina = 1, scrollTop = true) {
+  cargarProductos(pagina = 1, scrollTop = true, restaurar = false) {
     this.cargando.set(true);
     this.paginaActual = pagina;
 
@@ -107,15 +126,24 @@ export class CatalogoPage implements OnInit {
           this.totalPaginas = res.meta.totalPages;
           this.totalProductos = res.meta.total;
           this.cargando.set(false);
-          if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
 
-          // Si hay búsqueda activa, usar opciones filtradas
-          // Si no hay búsqueda, guardar como originales y usar esas
+          if (restaurar) {
+            const savedScroll = sessionStorage.getItem(this.SCROLL_KEY);
+            if (savedScroll) {
+              setTimeout(() => {
+                window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
+                sessionStorage.removeItem(this.SCROLL_KEY);
+                sessionStorage.removeItem(this.PAGE_KEY);
+              }, 50);
+            }
+          } else if (scrollTop) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+
           if (this.buscar) {
             this.marcas.set(res.marcasDisponibles);
             this.categorias.set(res.categoriasDisponibles);
           } else {
-            // Solo actualizar originales si no hay filtro de marca/categoria activo
             if (!this.marcaSeleccionada && !this.categoriaSeleccionada) {
               this.marcasOriginales.set(res.marcasDisponibles);
               this.categoriasOriginales.set(res.categoriasDisponibles);

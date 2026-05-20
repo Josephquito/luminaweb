@@ -37,11 +37,13 @@ export class ProductoPage implements OnInit {
       precio: p.precio,
       sku: p.sku,
       stock: p.stock,
+      imagenes: p.imagenes ?? [], // agrega esto
     });
     this.cotizadorRef.pulse();
   }
 
   ngOnInit() {
+    window.scrollTo({ top: 0, behavior: 'instant' });
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.catalog.getProductById(id).subscribe({
       next: (p) => {

@@ -64,7 +64,7 @@ export class CotizadorComponent implements OnInit {
     this.cotizador.getTarifas().subscribe((t) => this.tarifas.set(t));
 
     this.buscarSubject
-      .pipe(debounceTime(350), distinctUntilChanged())
+      .pipe(debounceTime(200), distinctUntilChanged())
       .subscribe((q) => this.ejecutarBusqueda(q));
   }
 
@@ -78,10 +78,13 @@ export class CotizadorComponent implements OnInit {
 
   abrir() {
     this.abierto.set(true);
+    document.body.style.overflow = 'hidden';
   }
+
   cerrar() {
     this.abierto.set(false);
     this.mostrarResultados.set(false);
+    document.body.style.overflow = '';
   }
 
   // ─── Búsqueda ─────────────────────────────────────────────────────────────────
@@ -215,5 +218,9 @@ export class CotizadorComponent implements OnInit {
     navigator.clipboard.writeText(texto);
     this.copiado.set(true);
     setTimeout(() => this.copiado.set(false), 2000);
+  }
+
+  getImagen(producto: ProductoCotizador): string {
+    return producto.imagenes?.[0]?.url ?? '/assets/placeholder.png';
   }
 }

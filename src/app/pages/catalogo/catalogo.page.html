@@ -93,7 +93,11 @@
       } @else {
         <div class="productos-grid">
           @for (producto of productos(); track producto.id) {
-            <a [routerLink]="['/producto', producto.id]" class="producto-card">
+            <a
+              [routerLink]="['/producto', producto.id]"
+              class="producto-card"
+              (click)="guardarPosicion()"
+            >
               <div class="card-img-wrap">
                 <img
                   [src]="getImagenPrincipal(producto)"
