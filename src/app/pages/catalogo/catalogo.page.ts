@@ -1,15 +1,17 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CatalogService, Producto } from '../../services/catalog.service';
+import { AuthService } from '../../services/auth.service';
+import { CotizadorComponent } from '../../shared/cotizador/cotizador.component';
 
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, CotizadorComponent],
   templateUrl: './catalogo.page.html',
   styleUrl: './catalogo.page.css',
 })
@@ -17,6 +19,7 @@ export class CatalogoPage implements OnInit {
   private catalog = inject(CatalogService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  auth = inject(AuthService);
 
   productos = signal<Producto[]>([]);
   marcas = signal<{ id: number; nombre: string }[]>([]);
@@ -36,8 +39,38 @@ export class CatalogoPage implements OnInit {
   totalProductos = 0;
   limit = 20;
 
+  skuCopiados = new Set<string>();
+
   private buscarSubject = new Subject<string>();
   private iniciado = false;
+
+  @ViewChild(CotizadorComponent) cotizadorRef!: CotizadorComponent;
+
+  agregarACotizador(event: Event, producto: any) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.cotizadorRef.agregarProducto({
+      id: producto.id,
+      nombreWeb: producto.nombreWeb || producto.nombre,
+      marca: producto.marca,
+      precio: producto.precio,
+      sku: producto.sku,
+      stock: producto.stock,
+    });
+    this.cotizadorRef.pulse();
+  }
+
+  copiarSku(event: Event, sku: string) {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(sku);
+    this.skuCopiados.add(sku);
+    setTimeout(() => this.skuCopiados.delete(sku), 1500);
+  }
+
+  skuCopiado(sku: string): boolean {
+    return this.skuCopiados.has(sku);
+  }
 
   ngOnInit() {
     if (this.iniciado) return;

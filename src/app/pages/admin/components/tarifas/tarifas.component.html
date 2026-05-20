@@ -1,0 +1,85 @@
+<div class="tarifas-wrap">
+  <div class="page-header">
+    <h2 class="page-title">Tarifas de envío</h2>
+    <button class="btn-primary" (click)="abrirCrear()">+ Nueva tarifa</button>
+  </div>
+
+  @if (cargando()) {
+    <div class="loading">Cargando tarifas...</div>
+  } @else {
+    <div class="table-wrap">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Destino</th>
+            <th>Tarifa (USD)</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tarifa of tarifas(); track tarifa.id) {
+            <tr>
+              <td>{{ tarifa.destino }}</td>
+              <td>${{ tarifa.tarifa | number: '1.2-2' }}</td>
+              <td class="acciones">
+                <button class="btn-editar" (click)="abrirEditar(tarifa)">Editar</button>
+                <button class="btn-eliminar" (click)="abrirEliminar(tarifa)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (modalAbierto()) {
+  <div class="overlay" (click)="cerrarModal()"></div>
+  <div class="modal">
+    <div class="modal-header">
+      <h2>{{ modoEditar() ? 'Editar tarifa' : 'Nueva tarifa' }}</h2>
+      <button class="modal-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <div class="field">
+      <label>Destino</label>
+      <input type="text" [(ngModel)]="formDestino" placeholder="Ej: CUENCA 2 km" />
+    </div>
+
+    <div class="field">
+      <label>Tarifa (USD)</label>
+      <input type="number" [(ngModel)]="formTarifa" placeholder="0.00" min="0" step="0.25" />
+    </div>
+
+    @if (errorModal) {
+      <div class="alert-error">{{ errorModal }}</div>
+    }
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" [disabled]="guardando()" (click)="guardar()">
+        {{ guardando() ? 'Guardando...' : modoEditar() ? 'Guardar cambios' : 'Crear tarifa' }}
+      </button>
+    </div>
+  </div>
+}
+
+@if (confirmarEliminar()) {
+  <div class="overlay" (click)="cerrarEliminar()"></div>
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h2>Eliminar tarifa</h2>
+      <button class="modal-close" (click)="cerrarEliminar()">✕</button>
+    </div>
+    <p class="confirm-text">
+      ¿Eliminar la tarifa <strong>{{ tarifaAEliminar()?.destino }}</strong
+      >?
+    </p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="cerrarEliminar()">Cancelar</button>
+      <button class="btn-danger" [disabled]="eliminando() !== null" (click)="eliminar()">
+        {{ eliminando() !== null ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+}

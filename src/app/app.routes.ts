@@ -20,14 +20,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.page').then((m) => m.LoginPage),
   },
   {
-    path: 'usuarios',
-    canActivate: [adminGuard],
-    loadComponent: () => import('./pages/usuarios/usuarios.page').then((m) => m.UsuariosPage),
-  },
-  {
     path: 'productos',
     canActivate: [staffGuard],
     loadComponent: () => import('./pages/productos/productos.page').then((m) => m.ProductosPage),
+  },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./pages/admin/admin.page').then((m) => m.AdminPage),
   },
   {
     path: '**',

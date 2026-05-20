@@ -1,0 +1,93 @@
+<div class="comisiones-wrap">
+  <div class="page-header">
+    <h2 class="page-title">Tabla de comisiones</h2>
+    <div class="header-actions">
+      <div class="porcentaje-field">
+        <label>% Comisión</label>
+        <div class="porcentaje-input-wrap">
+          <input type="number" [(ngModel)]="porcentaje" min="0" max="100" step="0.5" />
+          <span>%</span>
+        </div>
+      </div>
+      <button class="btn-secondary" (click)="limpiarTodo()">Restablecer</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th class="col-num">#</th>
+          <th>N° Factura</th>
+          <th>Valor factura</th>
+          <th>Valor base (sin IVA)</th>
+          <th>Comisión</th>
+          <th class="col-accion"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (fila of filas(); track trackById($index, fila); let i = $index) {
+          <tr [class.fila-activa]="fila.nFactura || fila.valorFactura">
+            <td class="col-num">{{ i + 1 }}</td>
+            <td>
+              <input
+                type="text"
+                class="cell-input"
+                [(ngModel)]="fila.nFactura"
+                (ngModelChange)="guardar()"
+                placeholder="—"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                class="cell-input cell-number"
+                [(ngModel)]="fila.valorFactura"
+                (ngModelChange)="guardar()"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </td>
+            <td class="col-calc">
+              @if (fila.valorFactura) {
+                ${{ valorBase(fila) | number: '1.2-2' }}
+              } @else {
+                <span class="empty-cell">—</span>
+              }
+            </td>
+            <td class="col-calc">
+              @if (fila.valorFactura) {
+                ${{ valorBase(fila) * (porcentaje / 100) | number: '1.2-2' }}
+              } @else {
+                <span class="empty-cell">—</span>
+              }
+            </td>
+            <td class="col-accion">
+              <button
+                class="btn-eliminar-fila"
+                (click)="eliminarFila(fila.id)"
+                title="Eliminar fila"
+              >
+                ✕
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn-agregar-fila" (click)="agregarFila()">+ Agregar fila</button>
+
+  <div class="totales">
+    <div class="total-row">
+      <span class="total-label">Total valor base para comisión</span>
+      <span class="total-valor">${{ totalBase | number: '1.2-2' }}</span>
+    </div>
+    <div class="total-row total-comision">
+      <span class="total-label">Comisión a recibir ({{ porcentaje }}%)</span>
+      <span class="total-valor">${{ comisionTotal | number: '1.2-2' }}</span>
+    </div>
+  </div>
+</div>

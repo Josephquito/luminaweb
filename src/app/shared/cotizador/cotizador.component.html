@@ -1,0 +1,183 @@
+<!-- BOTÓN FLOTANTE -->
+<button class="cotizador-fab" [class.cotizador-fab--pulse]="animando()" (click)="abrir()">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="22"
+    height="22"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="2"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+    />
+  </svg>
+  @if (totalItems > 0) {
+    <span class="fab-badge">{{ totalItems }}</span>
+  }
+</button>
+
+<!-- OVERLAY -->
+@if (abierto()) {
+  <div class="cotizador-overlay" (click)="cerrar()"></div>
+
+  <!-- DRAWER -->
+  <div class="cotizador-drawer">
+    <!-- HEADER -->
+    <div class="drawer-header">
+      <h2 class="drawer-title">Cotizador</h2>
+      <div class="header-right">
+        @if (items().length > 0) {
+          <button class="btn-vaciar" (click)="vaciarCotizador()">Vaciar</button>
+        }
+        <button class="drawer-close" (click)="cerrar()">✕</button>
+      </div>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="buscador-wrap">
+      <div class="buscador-input-wrap">
+        <input
+          type="text"
+          class="buscador-input"
+          [ngModel]="busqueda"
+          (ngModelChange)="onBusquedaChange($event)"
+          placeholder="Buscar por nombre, marca o SKU..."
+        />
+        @if (buscando()) {
+          <span class="buscando-spinner">...</span>
+        }
+      </div>
+
+      @if (mostrarResultados()) {
+        <div class="resultados-lista">
+          @if (resultados().length === 0) {
+            <div class="resultado-vacio">Sin resultados</div>
+          } @else {
+            @for (r of resultados(); track r.id) {
+              <button class="resultado-item" (click)="agregarProducto(r)">
+                <div class="resultado-info">
+                  <span class="resultado-nombre">{{ r.nombreWeb }}</span>
+                  @if (r.marca) {
+                    <span class="resultado-marca">{{ r.marca.nombre }}</span>
+                  }
+                </div>
+                <span class="resultado-precio">${{ r.precio | number: '1.2-2' }}</span>
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ITEMS -->
+    <div class="items-wrap">
+      @if (items().length === 0) {
+        <div class="items-vacio">
+          <p>Agrega productos para cotizar</p>
+        </div>
+      } @else {
+        @for (item of items(); track item.producto.id) {
+          <div class="item-row">
+            <div class="item-info">
+              @if (item.producto.marca) {
+                <span class="item-marca">{{ item.producto.marca.nombre }}</span>
+              }
+              <span class="item-nombre">{{ item.producto.nombreWeb }}</span>
+            </div>
+            <div class="item-controles">
+              <div class="cantidad-wrap">
+                <button
+                  class="cant-btn"
+                  (click)="cambiarCantidad(item.producto.id, item.cantidad - 1)"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  class="cant-input"
+                  [ngModel]="item.cantidad"
+                  (ngModelChange)="cambiarCantidad(item.producto.id, +$event)"
+                  min="1"
+                />
+                <button
+                  class="cant-btn"
+                  (click)="cambiarCantidad(item.producto.id, item.cantidad + 1)"
+                >
+                  +
+                </button>
+              </div>
+              <span class="item-subtotal"
+                >${{ item.producto.precio * item.cantidad | number: '1.2-2' }}</span
+              >
+              <button class="item-eliminar" (click)="eliminarItem(item.producto.id)">✕</button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- TOTALES -->
+    @if (items().length > 0) {
+      <div class="totales-wrap">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span>${{ subtotal | number: '1.2-2' }}</span>
+        </div>
+
+        <div class="total-row">
+          <label class="total-label-input"> Descuento (máx. 5%) </label>
+          <div class="descuento-input-wrap">
+            <input
+              type="number"
+              class="descuento-input"
+              [ngModel]="descuento"
+              (ngModelChange)="onDescuentoChange(+$event)"
+              min="0"
+              max="5"
+              step="0.5"
+            />
+            <span>%</span>
+          </div>
+        </div>
+
+        @if (descuento > 0) {
+          <div class="total-row descuento-row">
+            <span>Descuento</span>
+            <span>-${{ descuentoValor | number: '1.2-2' }}</span>
+          </div>
+        }
+
+        <div class="total-row">
+          <select class="envio-select" (change)="seleccionarTarifa($any($event.target).value)">
+            <option value="">Retiro en local</option>
+            @for (t of tarifas(); track t.id) {
+              <option [value]="t.id">{{ t.destino }}</option>
+            }
+          </select>
+          <span>${{ tarifaEnvio | number: '1.2-2' }}</span>
+        </div>
+
+        <div class="total-final">
+          <span>Total</span>
+          <span>${{ total | number: '1.2-2' }}</span>
+        </div>
+
+        <button
+          class="btn-copiar"
+          [class.btn-copiar--copiado]="copiado()"
+          (click)="copiarCotizacion()"
+        >
+          @if (copiado()) {
+            ✓ ¡Copiado!
+          } @else {
+            Copiar cotización
+          }
+        </button>
+      </div>
+    }
+  </div>
+}

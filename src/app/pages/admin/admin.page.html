@@ -1,0 +1,41 @@
+<div class="admin-wrap">
+  <div class="admin-header">
+    <h1 class="admin-title">Administración</h1>
+  </div>
+
+  <div class="tabs">
+    <button
+      class="tab-btn"
+      [class.tab-active]="tabActiva() === 'usuarios'"
+      (click)="setTab('usuarios')"
+    >
+      Usuarios
+    </button>
+    <button
+      class="tab-btn"
+      [class.tab-active]="tabActiva() === 'tarifas'"
+      (click)="setTab('tarifas')"
+    >
+      Tarifas de envío
+    </button>
+    <button
+      class="tab-btn"
+      [class.tab-active]="tabActiva() === 'comisiones'"
+      (click)="setTab('comisiones')"
+    >
+      Comisiones
+    </button>
+  </div>
+
+  <div class="tab-content">
+    @if (tabActiva() === 'usuarios') {
+      <app-usuarios-tab />
+    }
+    @if (tabActiva() === 'tarifas') {
+      <app-tarifas-tab />
+    }
+    @if (tabActiva() === 'comisiones') {
+      <app-comisiones-tab />
+    }
+  </div>
+</div>

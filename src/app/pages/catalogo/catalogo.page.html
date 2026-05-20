@@ -111,11 +111,52 @@
                   <span class="card-marca">{{ producto.marca.nombre }}</span>
                 }
                 <h3 class="card-nombre">{{ getNombreProducto(producto) }}</h3>
-                @if (producto.descripcionCorta) {
-                  <p class="card-desc">{{ producto.descripcionCorta }}</p>
+
+                @if (auth.isStaff()) {
+                  @if (producto.sku) {
+                    <button
+                      class="card-sku"
+                      [class.card-sku--copiado]="skuCopiado(producto.sku)"
+                      (click)="copiarSku($event, producto.sku)"
+                      title="Copiar SKU"
+                    >
+                      @if (skuCopiado(producto.sku)) {
+                        ✓ Copiado
+                      } @else {
+                        {{ producto.sku }}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                      }
+                    </button>
+                  }
+                } @else {
+                  @if (producto.descripcionCorta) {
+                    <p class="card-desc">{{ producto.descripcionCorta }}</p>
+                  }
                 }
+
                 <p class="card-precio">${{ producto.precio | number: '1.2-2' }}</p>
               </div>
+
+              @if (auth.isStaff()) {
+                <button
+                  class="btn-add-cotizador"
+                  (click)="agregarACotizador($event, producto)"
+                  title="Agregar al cotizador"
+                >
+                  +
+                </button>
+              }
             </a>
           }
         </div>
@@ -189,4 +230,9 @@
       <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
     </div>
   </div>
+}
+
+<!-- COTIZADOR -->
+@if (auth.isStaff()) {
+  <app-cotizador />
 }

@@ -75,7 +75,14 @@
           <span class="info-categoria">{{ producto()!.categoria!.nombre }}</span>
         }
 
-        <p class="info-precio">${{ producto()!.precio | number: '1.2-2' }}</p>
+        @if (auth.isStaff()) {
+          <p class="info-precio">${{ producto()!.precio | number: '1.2-2' }}</p>
+          <button class="btn-agregar-cotizador" (click)="agregarACotizador()">
+            + Agregar al cotizador
+          </button>
+        } @else {
+          <p class="info-precio">${{ producto()!.precio | number: '1.2-2' }}</p>
+        }
 
         @if (auth.isStaff()) {
           <p class="info-desc-corta"><strong>Stock:</strong> {{ producto()!.stock }} unidades</p>
@@ -110,4 +117,8 @@
     (cerrar)="cerrarModalImagen()"
     (actualizado)="onImagenesActualizadas()"
   />
+}
+
+@if (auth.isStaff()) {
+  <app-cotizador />
 }

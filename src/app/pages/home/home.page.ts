@@ -32,14 +32,22 @@ export class HomePage implements OnInit, AfterViewInit {
   marcas = signal<{ id: number; nombre: string }[]>([]);
   fotosTienda = signal<SiteMedia[]>([]);
   modalTiendaAbierto = signal(false);
+  cargandoMarcas = signal(true);
+  cargandoFotos = signal(true);
 
   ngOnInit() {
-    this.catalog.getMarcas().subscribe((m) => this.marcas.set(m));
+    this.catalog.getMarcas().subscribe((m) => {
+      this.marcas.set(m);
+      this.cargandoMarcas.set(false);
+    });
     this.cargarFotosTienda();
   }
 
   cargarFotosTienda() {
-    this.siteMedia.getByKey('tienda').subscribe((f) => this.fotosTienda.set(f));
+    this.siteMedia.getByKey('tienda').subscribe((f) => {
+      this.fotosTienda.set(f);
+      this.cargandoFotos.set(false);
+    });
   }
 
   ngAfterViewInit() {

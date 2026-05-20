@@ -11,25 +11,39 @@
 
   <!-- MARCAS -->
   <div class="marcas-scroll" #marcasScroll>
-    <div class="marcas-track">
-      @for (marca of marcas(); track marca.id) {
-        <button class="marca-item" (click)="irMarca(marca.nombre)">
-          <img
-            [src]="getLogoMarca(marca.nombre)"
-            [alt]="marca.nombre"
-            class="marca-logo"
-            (error)="onLogoError($event, marca.nombre)"
-          />
-          <span class="marca-nombre-fallback">{{ marca.nombre }}</span>
-        </button>
-      }
-    </div>
+    @if (cargandoMarcas()) {
+      <div class="marcas-track">
+        @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+          <div class="marca-skeleton"></div>
+        }
+      </div>
+    } @else {
+      <div class="marcas-track">
+        @for (marca of marcas(); track marca.id) {
+          <button class="marca-item" (click)="irMarca(marca.nombre)">
+            <img
+              [src]="getLogoMarca(marca.nombre)"
+              [alt]="marca.nombre"
+              class="marca-logo"
+              (error)="onLogoError($event, marca.nombre)"
+            />
+            <span class="marca-nombre-fallback">{{ marca.nombre }}</span>
+          </button>
+        }
+      </div>
+    }
   </div>
 
   <section class="fotos-section">
     <h2 class="fotos-titulo">Visita nuestra tienda</h2>
 
-    @if (fotosTienda().length) {
+    @if (cargandoFotos()) {
+      <div class="fotos-grid">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="foto-skeleton"></div>
+        }
+      </div>
+    } @else if (fotosTienda().length) {
       <div class="fotos-grid">
         @for (foto of fotosTienda(); track foto.id) {
           <div class="foto-item">

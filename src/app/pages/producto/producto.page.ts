@@ -4,11 +4,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CatalogService, Producto } from '../../services/catalog.service';
 import { AuthService } from '../../services/auth.service';
 import { SubirImagenModal } from '../../modales/subir-imagen/subir-imagen.modal';
+import { CotizadorComponent } from '../../shared/cotizador/cotizador.component';
 
 @Component({
   selector: 'app-producto',
   standalone: true,
-  imports: [CommonModule, RouterModule, SubirImagenModal],
+  imports: [CommonModule, RouterModule, SubirImagenModal, CotizadorComponent],
   templateUrl: './producto.page.html',
   styleUrl: './producto.page.css',
 })
@@ -19,11 +20,26 @@ export class ProductoPage implements OnInit {
   auth = inject(AuthService);
 
   @ViewChild('sliderRef') sliderRef!: ElementRef<HTMLDivElement>;
+  @ViewChild(CotizadorComponent) cotizadorRef!: CotizadorComponent;
 
   producto = signal<Producto | null>(null);
   cargando = signal(true);
   imagenActual = signal(0);
   modalImagenAbierto = signal(false);
+
+  agregarACotizador() {
+    const p = this.producto();
+    if (!p) return;
+    this.cotizadorRef.agregarProducto({
+      id: p.id,
+      nombreWeb: p.nombreWeb || p.nombre,
+      marca: p.marca,
+      precio: p.precio,
+      sku: p.sku,
+      stock: p.stock,
+    });
+    this.cotizadorRef.pulse();
+  }
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));

@@ -42,13 +42,13 @@
 
       @if (auth.isAdmin()) {
         <a
-          routerLink="/usuarios"
-          [class.text-white]="isActive('/usuarios')"
-          [class.font-semibold]="isActive('/usuarios')"
-          [class.text-gray-300]="!isActive('/usuarios')"
+          routerLink="/admin"
+          [class.text-white]="isActive('/admin')"
+          [class.font-semibold]="isActive('/admin')"
+          [class.text-gray-300]="!isActive('/admin')"
           class="hover:text-white text-sm"
         >
-          Usuarios
+          Admin
         </a>
       }
 
@@ -135,14 +135,13 @@
 
   @if (auth.isAdmin()) {
     <a
-      routerLink="/usuarios"
-      [class.text-white]="isActive('/usuarios')"
-      [class.font-semibold]="isActive('/usuarios')"
-      [class.text-gray-300]="!isActive('/usuarios')"
+      routerLink="/admin"
+      [class.text-white]="isActive('/admin')"
+      [class.font-semibold]="isActive('/admin')"
+      [class.text-gray-300]="!isActive('/admin')"
       class="hover:text-white text-sm"
-      (click)="closeMobileMenu()"
     >
-      Usuarios
+      Admin
     </a>
   }
 

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://lumina-odoo-api.onrender.com',
+  apiUrl: 'https://lumina-api.jotavix.com',
 };

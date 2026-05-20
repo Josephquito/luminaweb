@@ -7,30 +7,28 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { AuthService, Usuario } from '../../services/auth.service';
+import { AuthService, Usuario } from '../../../../services/auth.service';
 
 @Component({
-  selector: 'app-usuarios',
+  selector: 'app-usuarios-tab',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './usuarios.page.html',
-  styleUrl: './usuarios.page.css',
+  templateUrl: './usuarios.component.html',
+  styleUrl: './usuarios.component.css',
 })
-export class UsuariosPage implements OnInit {
+export class UsuariosComponent implements OnInit {
+  // mismo contenido interno que tu usuarios.page.ts actual
+  // sin cambiar nada adentro
   private auth = inject(AuthService);
   private fb = inject(FormBuilder);
 
   usuarios = signal<Usuario[]>([]);
   cargando = signal(false);
-
-  // Modal crear/editar
   modalAbierto = signal(false);
   modoEditar = signal(false);
   usuarioEditando = signal<Usuario | null>(null);
   guardando = signal(false);
   errorModal = '';
-
-  // Modal eliminar
   confirmarEliminar = signal(false);
   usuarioAEliminar = signal<Usuario | null>(null);
   eliminando = signal(false);
@@ -105,18 +103,13 @@ export class UsuariosPage implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-
     this.guardando.set(true);
     this.errorModal = '';
 
     if (this.modoEditar()) {
       const id = this.usuarioEditando()!.id;
-      const data: any = {
-        nombre: this.nombre.value,
-        email: this.email.value,
-      };
+      const data: any = { nombre: this.nombre.value, email: this.email.value };
       if (this.password.value) data.password = this.password.value;
-
       this.auth.editarUsuario(id, data).subscribe({
         next: () => {
           this.guardando.set(false);
@@ -134,7 +127,7 @@ export class UsuariosPage implements OnInit {
           nombre: this.nombre.value,
           email: this.email.value,
           password: this.password.value,
-          rol: 'VENDEDOR', // siempre vendedor
+          rol: 'VENDEDOR',
         })
         .subscribe({
           next: () => {
@@ -154,7 +147,6 @@ export class UsuariosPage implements OnInit {
     this.usuarioAEliminar.set(usuario);
     this.confirmarEliminar.set(true);
   }
-
   cerrarEliminar() {
     this.confirmarEliminar.set(false);
     this.usuarioAEliminar.set(null);
@@ -174,9 +166,7 @@ export class UsuariosPage implements OnInit {
   }
 
   toggle(usuario: Usuario) {
-    this.auth.toggleActivo(usuario.id).subscribe({
-      next: () => this.cargarUsuarios(),
-    });
+    this.auth.toggleActivo(usuario.id).subscribe({ next: () => this.cargarUsuarios() });
   }
 
   get usuarioActual() {
