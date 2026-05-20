@@ -193,26 +193,21 @@ export class CotizadorComponent implements OnInit {
       const subtotal = i.producto.precio * i.cantidad;
       const marca = i.producto.marca?.nombre ?? '';
       const nombre = `${i.cantidad}x ${i.producto.nombreWeb}${marca ? ' (' + marca + ')' : ''}`;
-      return `${nombre.padEnd(45, '.')} $${subtotal.toFixed(2)}`;
+      return `${nombre} $${subtotal.toFixed(2)}`;
     });
 
-    const destino = this.tarifaSeleccionada()?.destino ?? 'No especificado';
-
     const texto = [
-      'LUMINA - COTIZACIÓN',
-      '─'.repeat(50),
+      'Lumina Comercial de Cosméticos',
       ...lineas,
-      '─'.repeat(50),
-      `Subtotal:                                      $${this.subtotal.toFixed(2)}`,
+      '',
+      `Subtotal: $${this.subtotal.toFixed(2)}`,
       this.descuento > 0
-        ? `Descuento (${this.descuento}%):                            -$${this.descuentoValor.toFixed(2)}`
+        ? `Descuento (${this.descuento}%): -$${this.descuentoValor.toFixed(2)}`
         : null,
-      `Envío (${destino}):`,
-      `                                               $${this.tarifaEnvio.toFixed(2)}`,
-      '─'.repeat(50),
-      `TOTAL:                                         $${this.total.toFixed(2)}`,
+      `Envío: $${this.tarifaEnvio.toFixed(2)}`,
+      `Total: $${this.total.toFixed(2)}`,
     ]
-      .filter(Boolean)
+      .filter((l) => l !== null)
       .join('\n');
 
     navigator.clipboard.writeText(texto);
